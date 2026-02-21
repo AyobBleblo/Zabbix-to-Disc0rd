@@ -1,0 +1,48 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.7, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\ACER\My_projects\Zabbix
+plugins: lazy-fixture-0.6.3
+collected 3 items
+
+test\test_client.py FFF                                                  [100%]
+
+================================== FAILURES ===================================
+___________________________ test_zabbix_client_url ____________________________
+
+    def test_zabbix_client_url():
+>       with pytest.raises(ValueError):
+             ^^^^^^
+E       NameError: name 'pytest' is not defined
+
+test\test_client.py:8: NameError
+__________________________ test_get_current_problems __________________________
+
+    def test_get_current_problems():
+        client = ZabbixClint("http://10.10.10.10", ZABBIX_TOKEN)
+    
+        fake_response = {
+            "eventid": "1",
+            "name": "CPU High",
+            "severity": "3",
+            "clock": "1234567890",
+        }
+    
+>       with patch.object(client, "_call", return_value=fake_response):
+             ^^^^^^^^^^^^
+E       AttributeError: 'function' object has no attribute 'object'
+
+test\test_client.py:22: AttributeError
+__________________________ test_is_connected_success __________________________
+
+    def test_is_connected_success():
+        client = ZabbixClint("http://10.10.10.10", ZABBIX_TOKEN)
+>       with patch.object(client.session, "post")as mock_post:
+             ^^^^^^^^^^^^
+E       AttributeError: 'function' object has no attribute 'object'
+
+test\test_client.py:30: AttributeError
+=========================== short test summary info ===========================
+FAILED test/test_client.py::test_zabbix_client_url - NameError: name 'pytest'...
+FAILED test/test_client.py::test_get_current_problems - AttributeError: 'func...
+FAILED test/test_client.py::test_is_connected_success - AttributeError: 'func...
+============================== 3 failed in 0.20s ==============================
