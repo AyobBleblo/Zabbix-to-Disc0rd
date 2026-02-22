@@ -12,3 +12,5 @@ zabbix_minimal/config.py
 test_output.txt
 
 zabbix.log
+
+*.log
