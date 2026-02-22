@@ -1,7 +1,12 @@
 from client import ZabbixClint
 from config import ZABBIX_URL, ZABBIX_TOKEN
 from datetime import datetime
+from logging_config import setup_logging
+import logging
 
+setup_logging(logging.INFO)
+
+logger = logging.getLogger(__name__)
 
 def format_time(timestamp: str) -> str:
     return datetime.fromtimestamp(int(timestamp)).strftime("%Y-%m-%d %H:%M:%S")
@@ -18,11 +23,11 @@ def main():
         print("Zabbix server is not reachable")
         return
 
-    print("Zabbix server connected")
+    logger.info("Connected to Zabbix")
 
     problems = client.get_current_problems()
     if not problems:
-        print("No problems found")
+        logger.info("No problems found")
         return
 
     event_ids = [problem["eventid"] for problem in problems]
@@ -63,5 +68,5 @@ def main():
 if __name__ == "__main__":
 
     client = ZabbixClint(ZABBIX_URL, ZABBIX_TOKEN, host_group_id=["22"])
-    client.seld_tset()
+    client.test_zabbix_connection()
     main()

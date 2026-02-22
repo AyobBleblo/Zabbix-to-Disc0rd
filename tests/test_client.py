@@ -1,6 +1,5 @@
 from unittest.mock import patch
 import pytest
-import pytest_lazyfixture
 from zabbix_minimal.client import ZabbixClint
 from zabbix_minimal.config import ZABBIX_URL, ZABBIX_TOKEN
 
