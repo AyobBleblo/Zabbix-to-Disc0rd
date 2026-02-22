@@ -2,6 +2,10 @@ from requests import Session
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from typing import List, Dict, Any
+import logging
+import time
+
+logger = logging.getLogger(__name__)
 
 
 class ZabbixClint:
@@ -26,7 +30,7 @@ class ZabbixClint:
         self.session.mount("http://", adapter)
         self.session.mount("https://", adapter)
 
-    def seld_tset(self) -> dict:
+    def test_zabbix_connection (self) -> dict:
         result = {
             "connection": False,
             "problems_fetch": False,
@@ -48,26 +52,49 @@ class ZabbixClint:
         except Exception as e:
             result["error"] = str(e)
 
-        print(f"Connections state: {result.get('connection')} , Problems fetch state: {result.get('problems_fetch')} , Error: {result.get('error')}")
+        print(
+            f"Connections state: {result.get('connection')} , Problems fetch state: {result.get('problems_fetch')} , Error: {result.get('error')}")
         print("____________________________________________________________")
 
     def _call(self, method: str, params: Dict[str, Any] | None = None) -> Any:
         payload = {
             "jsonrpc": "2.0",
             "method": method,
-            "params": params,
+            "params": params or {},
             "auth": self.token,
             "id": 1,
         }
-        response = self.session.post(
-            self.base_url, json=payload, verify=self.verify_lts, timeout=20)
-        response.raise_for_status()
-        data = response.json()
 
-        if "error" in data:
-            raise RuntimeError(data["error"])
+        try:
+            start = time.time()
 
-        return data["result"]
+            logger.debug(f"Calling Zabbix API method: {method}")
+
+            # Note: The original identifier was verify_lts in __init__
+            response = self.session.post(
+                self.base_url,
+                json=payload,
+                verify=self.verify_lts,
+                timeout=40,
+            )
+
+            response.raise_for_status()
+            data = response.json()
+
+            duration = time.time() - start
+
+            if "error" in data:
+                logger.error(
+                    f"Zabbix API returned error for {method}: {data['error']}")
+                raise RuntimeError(data["error"])
+
+            logger.info(f"{method} succeeded in {duration:.2f}s")
+
+            return data["result"]
+
+        except Exception:
+            logger.exception(f"API call failed for method: {method}")
+            raise
 
     def get_current_problems(self) -> List[Dict[str, Any]]:
 
@@ -116,18 +143,28 @@ class ZabbixClint:
 
     def is_connected(self) -> bool:
         try:
+            logger.debug("Checking Zabbix API health")
+
             payload = {
                 "jsonrpc": "2.0",
                 "method": "apiinfo.version",
                 "params": [],
-                "id": 1,
+                "id": 1
             }
+
             response = self.session.post(
-                self.base_url, json=payload, verify=self.verify_lts, timeout=5)
+                self.base_url,
+                json=payload,
+                verify=self.verify_lts,
+                timeout=5
+            )
+
             response.raise_for_status()
             data = response.json()
 
+            logger.info("Zabbix connection successful")
             return "result" in data
 
         except Exception:
+            logger.warning("Zabbix connection failed")
             return False

@@ -1,0 +1,205 @@
+2026-02-22 14:13:07 | INFO | client | Zabbix connection successful
+2026-02-22 14:13:07 | INFO | client | problem.get succeeded in 0.05s
+2026-02-22 14:13:07 | INFO | client | Zabbix connection successful
+2026-02-22 14:13:07 | INFO | __main__ | Connected to Zabbix
+2026-02-22 14:13:07 | INFO | client | problem.get succeeded in 0.05s
+2026-02-22 14:13:07 | INFO | client | event.get succeeded in 0.05s
+2026-02-22 14:13:07 | INFO | client | host.get succeeded in 0.02s
+2026-02-22 14:13:18 | INFO | client | Zabbix connection successful
+2026-02-22 14:13:18 | INFO | client | problem.get succeeded in 0.04s
+2026-02-22 14:13:18 | INFO | client | Zabbix connection successful
+2026-02-22 14:13:18 | INFO | __main__ | Connected to Zabbix
+2026-02-22 14:13:18 | INFO | client | problem.get succeeded in 0.04s
+2026-02-22 14:13:18 | INFO | client | event.get succeeded in 0.04s
+2026-02-22 14:13:18 | INFO | client | host.get succeeded in 0.02s
+2026-02-22 22:55:13 | INFO | client | Zabbix connection successful
+2026-02-22 22:55:22 | INFO | client | problem.get succeeded in 9.10s
+2026-02-22 22:55:22 | INFO | client | Zabbix connection successful
+2026-02-22 22:55:22 | INFO | __main__ | Connected to Zabbix
+2026-02-22 22:55:24 | INFO | client | problem.get succeeded in 2.10s
+2026-02-22 22:55:25 | INFO | client | event.get succeeded in 0.98s
+2026-02-22 22:55:25 | INFO | client | host.get succeeded in 0.09s
+2026-02-22 22:56:18 | INFO | client | Zabbix connection successful
+2026-02-22 22:56:19 | INFO | client | problem.get succeeded in 0.20s
+2026-02-22 22:56:20 | INFO | client | Zabbix connection successful
+2026-02-22 22:56:20 | INFO | __main__ | Connected to Zabbix
+2026-02-22 22:56:20 | INFO | client | problem.get succeeded in 0.50s
+2026-02-22 22:56:21 | INFO | client | event.get succeeded in 1.01s
+2026-02-22 22:56:21 | INFO | client | host.get succeeded in 0.07s
+2026-02-22 23:05:15 | INFO | client | Zabbix connection successful
+2026-02-22 23:05:20 | INFO | client | problem.get succeeded in 5.31s
+2026-02-22 23:05:41 | INFO | client | problem.get succeeded in 20.40s
+2026-02-22 23:05:41 | INFO | client | Zabbix connection successful
+2026-02-22 23:05:41 | INFO | __main__ | Connected to Zabbix
+2026-02-22 23:05:41 | INFO | client | problem.get succeeded in 0.65s
+2026-02-22 23:05:46 | INFO | client | event.get succeeded in 5.09s
+2026-02-22 23:05:46 | ERROR | client | API call failed for method: host.get
+Traceback (most recent call last):
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\anaconda3\Lib\http\client.py", line 1428, in getresponse
+    response.begin()
+  File "C:\Users\ACER\anaconda3\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\anaconda3\Lib\http\client.py", line 300, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+http.client.RemoteDisconnected: Remote end closed connection without response
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\requests\adapters.py", line 644, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\util\retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\util\util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\anaconda3\Lib\http\client.py", line 1428, in getresponse
+    response.begin()
+  File "C:\Users\ACER\anaconda3\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\anaconda3\Lib\http\client.py", line 300, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+urllib3.exceptions.ProtocolError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ACER\My_projects\Zabbix\zabbix_minimal\client.py", line 74, in _call
+    response = self.session.post(
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\requests\adapters.py", line 659, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-02-22 23:06:24 | INFO | client | Zabbix connection successful
+2026-02-22 23:06:24 | INFO | client | problem.get succeeded in 0.71s
+2026-02-22 23:06:33 | INFO | client | problem.get succeeded in 8.69s
+2026-02-22 23:06:33 | INFO | client | Zabbix connection successful
+2026-02-22 23:06:33 | INFO | __main__ | Connected to Zabbix
+2026-02-22 23:06:38 | INFO | client | problem.get succeeded in 4.55s
+2026-02-22 23:06:42 | INFO | client | event.get succeeded in 4.35s
+2026-02-22 23:06:42 | INFO | client | host.get succeeded in 0.06s
+2026-02-22 23:07:19 | INFO | client | Zabbix connection successful
+2026-02-22 23:07:24 | INFO | client | problem.get succeeded in 4.66s
+2026-02-22 23:07:26 | INFO | client | problem.get succeeded in 2.21s
+2026-02-22 23:07:26 | INFO | client | Zabbix connection successful
+2026-02-22 23:07:26 | INFO | __main__ | Connected to Zabbix
+2026-02-22 23:07:31 | INFO | client | problem.get succeeded in 5.41s
+2026-02-22 23:07:32 | ERROR | client | API call failed for method: event.get
+Traceback (most recent call last):
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\anaconda3\Lib\http\client.py", line 1428, in getresponse
+    response.begin()
+  File "C:\Users\ACER\anaconda3\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\anaconda3\Lib\http\client.py", line 300, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+http.client.RemoteDisconnected: Remote end closed connection without response
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\requests\adapters.py", line 644, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\util\retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\util\util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\urllib3\connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\anaconda3\Lib\http\client.py", line 1428, in getresponse
+    response.begin()
+  File "C:\Users\ACER\anaconda3\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\anaconda3\Lib\http\client.py", line 300, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+urllib3.exceptions.ProtocolError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ACER\My_projects\Zabbix\zabbix_minimal\client.py", line 74, in _call
+    response = self.session.post(
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ACER\My_projects\Zabbix\venv\Lib\site-packages\requests\adapters.py", line 659, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-02-22 23:07:42 | INFO | client | Zabbix connection successful
+2026-02-22 23:07:49 | INFO | client | problem.get succeeded in 6.27s
+2026-02-22 23:07:52 | INFO | client | problem.get succeeded in 2.93s
+2026-02-22 23:07:52 | INFO | client | Zabbix connection successful
+2026-02-22 23:07:52 | INFO | __main__ | Connected to Zabbix
+2026-02-22 23:07:52 | INFO | client | problem.get succeeded in 0.24s
+2026-02-22 23:08:01 | INFO | client | event.get succeeded in 9.01s
+2026-02-22 23:08:01 | INFO | client | host.get succeeded in 0.52s
+2026-02-22 23:08:42 | INFO | client | Zabbix connection successful
+2026-02-22 23:08:42 | INFO | client | problem.get succeeded in 0.20s
+2026-02-22 23:08:42 | INFO | client | problem.get succeeded in 0.12s
+2026-02-22 23:08:43 | INFO | client | Zabbix connection successful
+2026-02-22 23:08:43 | INFO | __main__ | Connected to Zabbix
+2026-02-22 23:08:43 | INFO | client | problem.get succeeded in 0.39s
+2026-02-22 23:08:47 | INFO | client | event.get succeeded in 4.13s
+2026-02-22 23:09:01 | INFO | client | host.get succeeded in 13.89s
