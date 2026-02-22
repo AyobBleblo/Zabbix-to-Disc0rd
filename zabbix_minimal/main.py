@@ -8,10 +8,11 @@ setup_logging(logging.INFO)
 
 logger = logging.getLogger(__name__)
 
+
 def format_time(timestamp: str) -> str:
     return datetime.fromtimestamp(int(timestamp)).strftime("%Y-%m-%d %H:%M:%S")
 
-"""j"""
+
 def main():
 
     if not ZABBIX_URL or not ZABBIX_TOKEN:
