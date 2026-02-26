@@ -9,8 +9,8 @@ setup_logging(logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def format_time(timestamp: str) -> str:
-    return datetime.fromtimestamp(int(timestamp)).strftime("%Y-%m-%d %H:%M:%S")
+def format_time(timestamp: int) -> str:
+    return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def main():
@@ -26,44 +26,37 @@ def main():
 
     logger.info("Connected to Zabbix")
 
-    problems = client.get_current_problems()
+    problems = client.get_current_problems()  # Returns List[Problem]
     if not problems:
         logger.info("No problems found")
         return
 
-    event_ids = [problem["eventid"] for problem in problems]
-    # print(problems[0])
-    # print(event_ids[0])
-    events = client.get_event_hosts(event_ids)
+    # Use dot-notation because problems are now Problem dataclass objects
+    event_ids = [problem.eventid for problem in problems]
+    event_host_map_raw = client.get_event_hosts(event_ids)
     print(f"{len(problems)} problems found")
-    # print(events[0])
 
     event_host_map = {}
-
     host_ids = []
-    for event in events:
-        hosts = event.get("hosts")
 
+    for event_id, hosts in event_host_map_raw.items():
         if hosts:
             host = hosts[0]
-            event_host_map[event["eventid"]] = host
-            host_ids.append(host["hostid"])
+            event_host_map[event_id] = host
+            host_ids.append(host.hostid)
 
     ip_map = client.get_host_ips(host_ids)
 
     for problem in problems:
-        event_id = problem["eventid"]
-        host_info = event_host_map.get(event_id)
-        if not host_info:
+        host = event_host_map.get(problem.eventid)
+        if not host:
             continue
 
-        if problem["severity"] == "1":
-            host_name = host_info["name"]
-            host_id = host_info["hostid"]
-            ip = ip_map.get(host_id, "N/A")
-
-            # print(
-            #     f"{problem['name']} ({problem['severity']}) - {ip}     {host_name}")
+        if problem.severity == 1:
+            ip = ip_map.get(host.hostid, "N/A")
+            print(f"{problem.name} (severity={problem.severity}) - {ip}  {host.name}")
+            logger.info(
+                f"Problem: {problem.name} | Host: {host.name} | IP: {ip} | Resolved: {problem.is_resolved}")
 
 
 if __name__ == "__main__":
