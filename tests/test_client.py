@@ -22,7 +22,7 @@ def test_get_current_problems():
     with patch.object(client, "_call", return_value=fake_response):
         problems = client.get_current_problems()
         assert len(problems)
-        assert problems[0]["name"] == "CPU High"
+        assert problems[0].name == "CPU High"
 
 
 def test_is_connected_success():

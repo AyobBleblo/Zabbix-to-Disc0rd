@@ -1,7 +1,8 @@
 from requests import Session
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from typing import List, Dict, Any
+from models import Problem, Host, Interface
+from typing import List, Dict, Any, Optional
 import logging
 import time
 
@@ -30,7 +31,7 @@ class ZabbixClint:
         self.session.mount("http://", adapter)
         self.session.mount("https://", adapter)
 
-    def test_zabbix_connection (self) -> dict:
+    def test_zabbix_connection(self) -> dict:
         result = {
             "connection": False,
             "problems_fetch": False,
@@ -96,27 +97,34 @@ class ZabbixClint:
             logger.exception(f"API call failed for method: {method}")
             raise
 
-    def get_current_problems(self) -> List[Dict[str, Any]]:
-
-        params = {
-            "output": ["name", "severity", "clock", "eventid"],
+    def get_current_problems(self) -> List[Problem]:
+        raw_problems = self._call("problem.get", {
+            "output": "extend",
+            "suppressed": False,
             "recent": False,
-            "sortfield": "eventid",
+            "sortfield": ["eventid"],
             "sortorder": "DESC",
-        }
-        if self.host_group_id:
-            params["groupids"] = self.host_group_id
-        return self._call("problem.get", params)
+            **({"groupids": self.host_group_id} if self.host_group_id else {}),
+        })
+        return [Problem.from_api(p) for p in raw_problems]
 
-    def get_event_hosts(self, event_ids) -> List[Dict[str, Any]]:
-        return self._call("event.get", {
+    def get_event_hosts(self, event_ids: List[str]) -> Dict[str, List[Host]]:
+        raw_hosts = self._call("event.get", {
             "eventids": event_ids,
             "output": ["eventid"],
-            "selectHosts": ["hostid", "name"]
+            "selectHosts": ["hostid", "name", "status"]
         })
 
-    def get_host_ips(self, host_ids):
-        hosts = self._call("host.get", {
+        event_host_map = {}
+        for event in raw_hosts:
+            event_id = str(event["eventid"])
+            hosts = [Host.from_api(h) for h in event.get("hosts", [])]
+            event_host_map[event_id] = hosts
+
+        return event_host_map
+
+    def get_host_ips(self, host_ids: List[str]) -> Dict[str, str]:
+        raw_hosts = self._call("host.get", {
             "hostids": host_ids,
             "output": ["hostid"],
             "selectInterfaces": ["ip", "main"]
@@ -124,20 +132,25 @@ class ZabbixClint:
 
         ip_map = {}
 
-        for host in hosts:
-            interfaces = host.get("interfaces", [])
+        for host_data in raw_hosts:
+            host_id = str(host_data["hostid"])
+            interfaces_data = host_data.get("interfaces", [])
+
+            # Convert raw interface data to Interface models
+            interfaces = [Interface.from_api(iface)
+                          for iface in interfaces_data]
 
             ip = "N/A"
 
             for interface in interfaces:
-                if interface.get("main") == "1":
-                    ip = interface.get("ip")
+                if interface.main:
+                    ip = interface.ip
                     break
 
             if ip == "N/A" and interfaces:
-                ip = interfaces[0].get("ip", "N/A")
+                ip = interfaces[0].ip
 
-            ip_map[host["hostid"]] = ip
+            ip_map[host_id] = ip
 
         return ip_map
 
