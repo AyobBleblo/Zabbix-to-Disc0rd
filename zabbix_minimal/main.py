@@ -1,7 +1,8 @@
-from client import ZabbixClint
-from config import ZABBIX_URL, ZABBIX_TOKEN
+from .client import ZabbixClint
+from .config import ZABBIX_URL, ZABBIX_TOKEN
+from .monitor import ZabbixMonitor
 from datetime import datetime
-from logging_config import setup_logging
+from .logging_config import setup_logging
 import logging
 
 setup_logging(logging.INFO)
@@ -59,8 +60,39 @@ def main():
                 f"Problem: {problem.name} | Host: {host.name} | IP: {ip} | Resolved: {problem.is_resolved}")
 
 
+def print_problems_callback(current, new, resolved):
+    print("\n" + "="*50)
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Zabbix Monitor Update")
+    print("="*50)
+
+    if new:
+        print(f"\n[!] NEW PROBLEMS ({len(new)}):")
+        for p in new:
+            print(
+                f"  - [Severity: {p.severity}] {p.name} (Event ID: {p.eventid})")
+
+    if resolved:
+        print(f"\n[v] RESOLVED PROBLEMS ({len(resolved)}):")
+        for p in resolved:
+            print(
+                f"  - [Severity: {p.severity}] {p.name} (Event ID: {p.eventid})")
+
+    if not new and not resolved:
+        print(
+            f"No changes. Currently tracking {len(current)} active problems.")
+
+    print("="*50 + "\n")
+
+
 if __name__ == "__main__":
 
     client = ZabbixClint(ZABBIX_URL, ZABBIX_TOKEN, host_group_id=["22"])
+    monitor = ZabbixMonitor(client)
     client.test_zabbix_connection()
-    main()
+
+    print("Starting Zabbix Monitor polling every 10 seconds...")
+    try:
+        monitor.start_polling(10, print_problems_callback, on_change_only=True)
+    except KeyboardInterrupt:
+        print("\nStopping monitor...")
+        monitor.stop()

@@ -1,7 +1,7 @@
 from requests import Session
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from models import Problem, Host, Interface
+from zabbix_minimal.models import Problem, Host, Interface
 from typing import List, Dict, Any, Optional
 import logging
 import time
