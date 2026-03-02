@@ -7,7 +7,6 @@ __pycache__/
 
 main_zabbix.py
 
-zabbix_minimal/config.py
 
 test_output.txt
 
