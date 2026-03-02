@@ -31,5 +31,9 @@ jobs:
         pip install -e .
 
     - name: Run Unit Tests with Coverage
+      env:
+        ZABBIX_URL: ${{ secrets.ZABBIX_URL }}
+        ZABBIX_TOKEN: ${{ secrets.ZABBIX_TOKEN }}
+        HOST_GROUP_ID: ${{ secrets.HOST_GROUP_ID }}
       run: |
         pytest -m "not integration"

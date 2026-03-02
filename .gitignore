@@ -12,6 +12,8 @@ zabbix_minimal/config.py
 test_output.txt
 
 zabbix.log
+.env
+.coverage
 
 *.log
 *.txt

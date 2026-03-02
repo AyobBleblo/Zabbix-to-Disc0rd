@@ -3,3 +3,5 @@ urllib3
 pyzabbix
 pytest
 pytest-lazy-fixtures
+python-dotenv
+
