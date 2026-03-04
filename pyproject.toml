@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "zabbix-minimal"
 version = "0.1.0"
 description = "Zabbix monitoring engine"
-authors = [{name = "Your Name"}]
+authors = [{name = "Ayoub Bleblo"}]
 requires-python = ">=3.10"
 
 dependencies = [

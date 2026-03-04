@@ -5,18 +5,17 @@ from zabbix_minimal.client import ZabbixClint
 from zabbix_minimal.models import Problem
 
 
-"""URL Validation Test"""
-
-
 def test_zabbix_client_invalid_url():
+    """URL Validation Test"""
+
     with pytest.raises(ValueError):
         ZabbixClint("ftp://invalid-url.com", "token", ["22"])
 
 
-"""get_current_problems returns Problem objects"""
-
-
 def test_get_current_problems():
+    """get_current_problems returns Problem objects
+            Logic & Data Mapping Test   """
+
     client = ZabbixClint("http://example.com", "token", ["22"])
 
     fake_problem = [{
@@ -52,10 +51,10 @@ def test_get_current_problems():
         assert problems[0].primary_host.name == "Server1"
 
 
-"""is_connected Success"""
-
-
 def test_is_connected_success():
+    """is_connected Success
+    the url below is fake but it doesn't matter"""
+
     client = ZabbixClint("http://10.10.10.10", "token", ["22"])
 
     mock_response = MagicMock()
@@ -67,10 +66,9 @@ def test_is_connected_success():
         assert client.is_connected() is True
 
 
-"""is_connected Failure"""
-
-
 def test_is_connected_failure():
+    """is_connected Failure"""
+
     client = ZabbixClint("http://10.10.10.10", "token", ["22"])
 
     with patch.object(client.session, "post", side_effect=Exception("Connection error")):
