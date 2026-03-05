@@ -9,15 +9,51 @@ import time
 logger = logging.getLogger(__name__)
 
 
+class HostCache:
+    def __init__(self, ttl_seconds: int = 300):
+        self.cache = {}
+        self.last_refresh = time.time()
+        self.ttl_seconds = ttl_seconds
+
+    def is_expired(self) -> bool:
+        return time.time() - self.last_refresh > self.ttl_seconds
+
+    def refresh(self):
+        self.cache.clear()
+        self.last_refresh = time.time()
+
+    def get_missing(self, keys: List[str]) -> List[str]:
+        if self.is_expired():
+            self.refresh()
+        return [k for k in keys if k not in self.cache]
+
+    def update(self, new_data: Dict[str, Any]):
+        self.cache.update(new_data)
+
+    def get_many(self, keys: List[str]) -> Dict[str, Any]:
+        if self.is_expired():
+            self.refresh()
+        return {k: self.cache[k] for k in keys if k in self.cache}
+
+
 class ZabbixClint:
     def __init__(self, base_url: str, api_token: str, host_group_id: str = None, verify_lts: bool = True):
 
-        if not base_url.startswith("http://"):
-            raise ValueError("base_url must start with http:// or https://")
+        if "://" in base_url and not base_url.startswith(("http://", "https://")):
+            raise ValueError(f"Invalid URL scheme in {base_url}")
+        if not base_url.startswith(("http://", "https://")):
+            base_url = "http://" + base_url
         self.base_url = base_url.rstrip("/") + "/api_jsonrpc.php"
         self.token = api_token
         self.verify_lts = verify_lts
-        self.host_group_id = host_group_id or []
+
+        if not host_group_id:
+            self.host_group_id = []
+        elif isinstance(host_group_id, list):
+            self.host_group_id = [g for g in host_group_id if g]
+        else:
+            self.host_group_id = [host_group_id]
+
         self.session = Session()
         self.session.headers.update({
             "Content-Type": "application/json",
@@ -30,6 +66,10 @@ class ZabbixClint:
         adapter = HTTPAdapter(max_retries=retries)
         self.session.mount("http://", adapter)
         self.session.mount("https://", adapter)
+
+        # Initialize API caches
+        self.event_host_cache = HostCache(ttl_seconds=300)
+        self.host_ip_cache = HostCache(ttl_seconds=300)
 
     def test_zabbix_connection(self) -> dict:
         result = {
@@ -109,50 +149,66 @@ class ZabbixClint:
         return [Problem.from_api(p) for p in raw_problems]
 
     def get_event_hosts(self, event_ids: List[str]) -> Dict[str, List[Host]]:
-        raw_hosts = self._call("event.get", {
-            "eventids": event_ids,
-            "output": ["eventid"],
-            "selectHosts": ["hostid", "name", "status"]
-        })
+        if not event_ids:
+            return {}
 
-        event_host_map = {}
-        for event in raw_hosts:
-            event_id = str(event["eventid"])
-            hosts = [Host.from_api(h) for h in event.get("hosts", [])]
-            event_host_map[event_id] = hosts
+        missing_event_ids = self.event_host_cache.get_missing(event_ids)
 
-        return event_host_map
+        if missing_event_ids:
+            raw_hosts = self._call("event.get", {
+                "eventids": missing_event_ids,
+                "output": ["eventid"],
+                "selectHosts": ["hostid", "name", "status"]
+            })
+
+            new_event_host_map = {}
+            for event in raw_hosts:
+                event_id = str(event["eventid"])
+                hosts = [Host.from_api(h) for h in event.get("hosts", [])]
+                new_event_host_map[event_id] = hosts
+
+            self.event_host_cache.update(new_event_host_map)
+
+        return self.event_host_cache.get_many(event_ids)
 
     def get_host_ips(self, host_ids: List[str]) -> Dict[str, str]:
-        raw_hosts = self._call("host.get", {
-            "hostids": host_ids,
-            "output": ["hostid"],
-            "selectInterfaces": ["ip", "main"]
-        })
+        if not host_ids:
+            return {}
 
-        ip_map = {}
+        missing_host_ids = self.host_ip_cache.get_missing(host_ids)
 
-        for host_data in raw_hosts:
-            host_id = str(host_data["hostid"])
-            interfaces_data = host_data.get("interfaces", [])
+        if missing_host_ids:
+            raw_hosts = self._call("host.get", {
+                "hostids": missing_host_ids,
+                "output": ["hostid"],
+                "selectInterfaces": ["ip", "main"]
+            })
 
-            # Convert raw interface data to Interface models
-            interfaces = [Interface.from_api(iface)
-                          for iface in interfaces_data]
+            new_ip_map = {}
 
-            ip = "N/A"
+            for host_data in raw_hosts:
+                host_id = str(host_data["hostid"])
+                interfaces_data = host_data.get("interfaces", [])
 
-            for interface in interfaces:
-                if interface.main:
-                    ip = interface.ip
-                    break
+                # Convert raw interface data to Interface models
+                interfaces = [Interface.from_api(iface)
+                              for iface in interfaces_data]
 
-            if ip == "N/A" and interfaces:
-                ip = interfaces[0].ip
+                ip = "N/A"
 
-            ip_map[host_id] = ip
+                for interface in interfaces:
+                    if interface.main:
+                        ip = interface.ip
+                        break
 
-        return ip_map
+                if ip == "N/A" and interfaces:
+                    ip = interfaces[0].ip
+
+                new_ip_map[host_id] = ip
+
+            self.host_ip_cache.update(new_ip_map)
+
+        return self.host_ip_cache.get_many(host_ids)
 
     def is_connected(self) -> bool:
         try:
