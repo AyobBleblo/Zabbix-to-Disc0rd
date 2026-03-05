@@ -2,7 +2,7 @@ import time
 import threading
 from typing import List, Dict, Set, Tuple
 from .models import Problem
-from .client import ZabbixClint
+from .api import ZabbixClint
 
 
 class ZabbixMonitor:

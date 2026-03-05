@@ -1,5 +1,5 @@
 import pytest
-from zabbix_minimal.client import ZabbixClint
+from zabbix_minimal.api import ZabbixClint
 from zabbix_minimal.monitor import ZabbixMonitor
 from zabbix_minimal.config import ZABBIX_URL, ZABBIX_TOKEN, HOST_GROUP_ID
 

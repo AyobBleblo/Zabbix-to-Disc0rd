@@ -1,7 +1,6 @@
 from unittest.mock import patch, MagicMock
 import pytest
-
-from zabbix_minimal.client import ZabbixClint
+from zabbix_minimal.api import ZabbixClint
 from zabbix_minimal.models import Problem
 
 

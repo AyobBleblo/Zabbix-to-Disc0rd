@@ -1,4 +1,4 @@
-from .client import ZabbixClint
+from .api import ZabbixClint
 from .config import ZABBIX_URL, ZABBIX_TOKEN
 from .monitor import ZabbixMonitor
 from datetime import datetime
@@ -22,7 +22,7 @@ def main():
     client = ZabbixClint(ZABBIX_URL, ZABBIX_TOKEN, host_group_id="22")
 
     if not client.is_connected():
-        print("Zabbix server is not reachable")
+        logger.error("Zabbix server is not reachable")
         return
 
     logger.info("Connected to Zabbix")
@@ -35,7 +35,7 @@ def main():
     # Use dot-notation because problems are now Problem dataclass objects
     event_ids = [problem.eventid for problem in problems]
     event_host_map_raw = client.get_event_hosts(event_ids)
-    print(f"{len(problems)} problems found")
+    logger.info(f"{len(problems)} problems found")
 
     event_host_map = {}
     host_ids = []
@@ -55,33 +55,33 @@ def main():
 
         if problem.severity == 1:
             ip = ip_map.get(host.hostid, "N/A")
-            print(f"{problem.name} (severity={problem.severity}) - {ip}  {host.name}")
             logger.info(
                 f"Problem: {problem.name} | Host: {host.name} | IP: {ip} | Resolved: {problem.is_resolved}")
 
 
 def print_problems_callback(current, new, resolved):
-    print("\n" + "="*50)
-    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Zabbix Monitor Update")
-    print("="*50)
+    logger.info("="*50)
+    logger.info(
+        f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Zabbix Monitor Update")
+    logger.info("="*50)
 
     if new:
-        print(f"\n[!] NEW PROBLEMS ({len(new)}):")
+        logger.warning(f"[!] NEW PROBLEMS ({len(new)}):")
         for p in new:
-            print(
+            logger.warning(
                 f"  - [Severity: {p.severity}] {p.name} (Event ID: {p.eventid})")
 
     if resolved:
-        print(f"\n[v] RESOLVED PROBLEMS ({len(resolved)}):")
+        logger.info(f"[v] RESOLVED PROBLEMS ({len(resolved)}):")
         for p in resolved:
-            print(
+            logger.info(
                 f"  - [Severity: {p.severity}] {p.name} (Event ID: {p.eventid})")
 
     if not new and not resolved:
-        print(
+        logger.info(
             f"No changes. Currently tracking {len(current)} active problems.")
 
-    print("="*50 + "\n")
+    logger.info("="*50)
 
 
 if __name__ == "__main__":
@@ -90,9 +90,9 @@ if __name__ == "__main__":
     monitor = ZabbixMonitor(client)
     client.test_zabbix_connection()
 
-    print("Starting Zabbix Monitor polling every 10 seconds...")
+    logger.info("Starting Zabbix Monitor polling every 10 seconds...")
     try:
         monitor.start_polling(10, print_problems_callback, on_change_only=True)
     except KeyboardInterrupt:
-        print("\nStopping monitor...")
+        logger.info("Stopping monitor...")
         monitor.stop()
