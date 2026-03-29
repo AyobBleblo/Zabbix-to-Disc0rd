@@ -4,4 +4,6 @@ pyzabbix
 pytest
 pytest-lazy-fixtures
 python-dotenv
+discord.py
+flask
 

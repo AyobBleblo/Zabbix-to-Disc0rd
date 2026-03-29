@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ 'Edit Channel' if channel else 'New Channel' }}</h1>
+
+<form method="POST"
+    action="{{ url_for('channel_update', channel_id=channel['id']) if channel else url_for('channel_create') }}">
+
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" value="{{ channel['name'] if channel else '' }}"
+            placeholder="e.g. Network Alerts" required>
+    </div>
+
+    <div class="form-group">
+        <label>Discord Channel ID</label>
+        <input type="text" name="discord_channel_id" value="{{ channel['discord_channel_id'] if channel else '' }}"
+            placeholder="Right-click channel → Copy ID" required>
+    </div>
+
+    <div class="form-group">
+        <label>Bot Token</label>
+        <input type="password" name="bot_token" value="{{ channel['bot_token'] if channel else '' }}" required>
+    </div>
+
+    <div class="form-group">
+        <label>Severities to Send</label>
+        <small>Check every severity level this channel should receive</small>
+        {% set sev_labels = [
+            (0, '⬜ Not classified'),
+            (1, '🔵 Information'),
+            (2, '🟡 Warning'),
+            (3, '🟠 Average'),
+            (4, '🔴 High'),
+            (5, '💀 Disaster')
+        ] %}
+        <div class="severity-checkboxes">
+            {% for val, label in sev_labels %}
+                <label class="sev-label">
+                    <input type="checkbox" name="severity" value="{{ val }}"
+                        {% if channel %}
+                            {% if val|string in channel['allowed_severities'] %}checked{% endif %}
+                        {% else %}
+                            checked
+                        {% endif %}>
+                    {{ label }}
+                </label>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Include Substrings (comma-separated, leave empty for all)</label>
+        <input type="text" name="include_substrings"
+            value="{{ channel['include_substrings']|replace('[','') |replace(']','')|replace('\"', '') if channel else '' }}"
+               placeholder="e.g. device_offline, link_down">
+        <small>Only problems containing at least one of these will be sent</small>
+    </div>
+
+    <div class="form-group">
+        <label>Exclude Substrings (comma-separated)</label>
+        <input type="text" name="exclude_substrings"
+               value="{{ channel[' exclude_substrings']|replace('[','') |replace(']','')|replace('\"', '' ) if channel
+            else '' }}" placeholder="e.g. power, test">
+        <small>Problems containing any of these will be ignored</small>
+    </div>
+
+    <div class="form-group">
+        <label>Host-Specific Ignores</label>
+        <div id="host-ignores">
+            <!-- Dynamic rows go here -->
+        </div>
+        <button type="button" onclick="addHostIgnoreRow()" class="btn btn-small">+ Add Rule</button>
+        <small>If problem contains the substring AND the host matches → ignore it</small>
+    </div>
+
+    <div class="form-group">
+        <label>
+            <input type="checkbox" name="enabled" value="1" {{ 'checked' if not channel or channel['enabled'] else ''
+                }}>
+            Enabled
+        </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        {{ 'Update' if channel else 'Create' }}
+    </button>
+</form>
+
+<script>
+    let ignoreRowIndex = 0;
+
+    function addHostIgnoreRow(sub = '', host = '') {
+        const container = document.getElementById('host-ignores');
+        const row = document.createElement('div');
+        row.className = 'ignore-row';
+        row.innerHTML = `
+            <input type="text" name="host_ignore_sub_${ignoreRowIndex}"
+                   value="${sub}" placeholder="Substring (e.g. lowcablespeedlink1)">
+            <input type="text" name="host_ignore_host_${ignoreRowIndex}"
+                   value="${host}" placeholder="Hostname (e.g. 1SW)">
+            <button type="button" onclick="this.parentElement.remove()" class="btn btn-small btn-danger">✕</button>
+        `;
+        container.appendChild(row);
+        ignoreRowIndex++;
+    }
+
+    // Load existing host ignores when editing
+    {% if channel and channel['host_ignores'] %}
+    const existingIgnores = {{ channel["host_ignores"] | safe }};
+    existingIgnores.forEach(rule => {
+        addHostIgnoreRow(rule.substring || '', rule.hostname || '');
+    });
+    {% endif %}
+</script>
+{% endblock %}

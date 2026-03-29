@@ -7,7 +7,6 @@ __pycache__/
 
 main_zabbix.py
 
-
 test_output.txt
 
 zabbix.log
@@ -18,3 +17,4 @@ zabbix.log
 *.txt
 *.md
 *.pyc
+dashboard.db

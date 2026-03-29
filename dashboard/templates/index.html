@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="header-row">
+    <h1>Discord Channels</h1>
+    <a href="{{ url_for('channel_new') }}" class="btn btn-primary">+ Add Channel</a>
+</div>
+
+{% if channels %}
+<div class="card-grid">
+    {% for ch in channels %}
+    <div class="card">
+        <div class="card-header">
+            <h3>{{ ch['name'] }}</h3>
+            <span class="badge {{ 'badge-active' if ch['enabled'] else 'badge-inactive' }}">
+                {{ 'Active' if ch['enabled'] else 'Disabled' }}
+            </span>
+        </div>
+        <div class="card-body">
+            <p><strong>Channel ID:</strong> {{ ch['discord_channel_id'] }}</p>
+            <p><strong>Min Severity:</strong> {{ ch['min_severity'] }}</p>
+        </div>
+        <div class="card-actions">
+            <a href="{{ url_for('channel_edit', channel_id=ch['id']) }}" class="btn btn-small">Edit</a>
+            <form method="POST" action="{{ url_for('channel_delete', channel_id=ch['id']) }}"
+                  style="display:inline" onsubmit="return confirm('Delete this channel?')">
+                <button type="submit" class="btn btn-small btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>No channels configured yet. Add one to get started!</p>
+</div>
+{% endif %}
+{% endblock %}
